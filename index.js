@@ -20,26 +20,24 @@ app.get('/', (req, res) => {
   res.send('Welcome to the home page!');
 });
 
-// Establish MongoDB connection before starting the server
-connection()
-  .then(() => {
-    // Routes
-    app.use('/user', userRouter);
-    app.use('/admin', adminRouter);
-    app.use('/product', productRouter);
-    app.use('/cart', authorizedMiddleware, cartRouter);
-    app.use('/order', orderRouter);
-    app.use('/wishlist', authorizedMiddleware, WishlistRouter);
+// Routes
+app.use('/user', userRouter);
+app.use('/admin', adminRouter);
+app.use('/product', productRouter);
+app.use('/cart', authorizedMiddleware, cartRouter);
+app.use('/order', orderRouter);
+app.use('/wishlist', authorizedMiddleware, WishlistRouter);
 
-    // Not found route
-    app.use((req, res) => {
-      res.status(404).send('Route not found');
-    });
+// Not found route
+app.use((req, res) => {
+  res.status(404).send('Route not found');
+});
 
-    app.listen(process.env.PORT, () => {
-      console.log(`Server is running at ${process.env.PORT}`);
-    });
-  })
-  .catch((error) => {
-    console.error(error);
-  });
+app.listen(process.env.PORT, async () => {
+  try {
+    await connection();
+  } catch (error) {
+    console.log(error);
+  }
+  console.log(`Server is running at ${process.env.PORT}`);
+});
